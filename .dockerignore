@@ -1,38 +1,28 @@
-# Git
 .git/
 .gitignore
 
-# Python
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
-.venv/
+**/__pycache__/
+**/*.py[oc]
+**/.venv/
+**/build/
+**/dist/
+**/*.egg-info
 
-# Tooling caches
-.ruff_cache/
-.mypy_cache/
-.pytest_cache/
+**/node_modules/
 
-# Secrets / env
+**/.ruff_cache/
+**/.mypy_cache/
+**/.pytest_cache/
+
 .env
 .env.*
 !.env.example
 
-# Frontend build artifacts and deps
-node_modules/
-frontend/dist/
+**/*.log
 
-# Docs / project meta
-README.md
-TODO.md
-
-# IDE / OS
 .idea/
 .vscode/
 .DS_Store
 
-# Logs
-*.log
+README.md
+TODO.md

@@ -1,8 +1,8 @@
 FROM python:3.12-slim
 WORKDIR /app
 RUN pip install uv
-COPY pyproject.toml uv.lock ./
+COPY backend/pyproject.toml backend/uv.lock ./
 RUN uv sync --locked
-COPY src ./src
+COPY backend/src ./src
 EXPOSE 8000
-CMD ["uv", "run", "uvicorn", "src.main:app", "--host", "127.0.0.1", "--port", "8000"]
+CMD ["uv", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]

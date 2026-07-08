@@ -1,0 +1,35 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --wood-dark: #3a2415;
+  --wood: #6b4423;
+  --plank: #b5834f;
+  --plank-light: #d9a86c;
+  --ember: #e2622c;
+  --text: #fff3e6;
+  --text-dim: #e9cba8;
+
+  font-family: "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+  color: var(--text);
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at top, rgba(226, 98, 44, 0.25), transparent 60%),
+    repeating-linear-gradient(
+      180deg,
+      #4a2e19 0px,
+      #4a2e19 46px,
+      #432917 46px,
+      #432917 48px
+    ),
+    linear-gradient(180deg, #3a2415, #2a1a0e);
+  background-attachment: fixed;
+}
