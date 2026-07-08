@@ -4,6 +4,7 @@ import aiomqtt
 
 from src.config import settings
 from src.db import metric
+from src.ws import ws
 
 TOPIC_METRIC = {
     "/IskraBanya/Temp": "temp",
@@ -28,6 +29,7 @@ async def handle_message(topic: str, payload: str) -> None:
         return
 
     await metric.add(_metric, value)  # pyright: ignore
+    await ws.broadcast({_metric: value})
 
 
 async def mqtt_listen() -> None:

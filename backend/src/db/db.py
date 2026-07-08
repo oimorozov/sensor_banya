@@ -1,4 +1,5 @@
 import asyncpg
+import os
 
 from src.config import settings
 
@@ -18,6 +19,12 @@ async def init_db() -> None:
         password=settings.settings.POSTGRES_PASSWORD,
         database=settings.settings.POSTGRES_DB,
     )
+
+    file_path: str = os.path.join(__file__, "ddl", "metrics.sql")
+    with open(file_path, "r") as f:
+        ddl = f.read()
+        async with pool.acquire() as conn:
+            await conn.execute(ddl)
 
 
 async def close_db() -> None:

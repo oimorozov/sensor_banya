@@ -12,6 +12,7 @@ async def add(metric: str, value: float) -> None:
             value,
         )
 
+
 async def get_latest() -> dict | None:
     """
     Select recent metrics
@@ -21,4 +22,3 @@ async def get_latest() -> dict | None:
             "SELECT DISTINCT ON (metric) metric, value, ts FROM metrics ORDER BY metric, ts DESC"
         )
         return {row["metric"]: row["value"] for row in rows}
-
