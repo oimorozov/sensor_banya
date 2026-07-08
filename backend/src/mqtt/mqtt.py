@@ -19,7 +19,7 @@ async def handle_message(topic: str, payload: str) -> None:
     Handles message and writes it to database
     """
     _metric = TOPIC_METRIC.get(topic)
-    if metric is None:
+    if _metric is None:
         return
 
     try:
