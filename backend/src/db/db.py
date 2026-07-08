@@ -20,7 +20,7 @@ async def init_db() -> None:
         database=settings.settings.POSTGRES_DB,
     )
 
-    file_path: str = os.path.join(__file__, "ddl", "metrics.sql")
+    file_path: str = os.path.join(os.path.dirname(__file__), "ddl", "metrics.sql")
     with open(file_path, "r") as f:
         ddl = f.read()
         async with pool.acquire() as conn:

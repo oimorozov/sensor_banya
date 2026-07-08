@@ -13,7 +13,7 @@ async def add(metric: str, value: float) -> None:
         )
 
 
-async def get_latest() -> dict | None:
+async def get_latest() -> dict:
     """
     Select recent metrics
     """
