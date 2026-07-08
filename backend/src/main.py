@@ -4,19 +4,16 @@ from fastapi import FastAPI
 
 import asyncpg
 
+from src.db import db
 from src.config import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    conn = await asyncpg.connect(
-        host=settings.settings.POSTGRES_HOST,
-        port=settings.settings.POSTGRES_PORT,
-        user=settings.settings.POSTGRES_USER,
-        password=settings.settings.POSTGRES_PASSWORD,
-        database=settings.settings.POSTGRES_DB,
-    )
+    await db.init_db()
+
     yield
-    await conn.close()
+
+    await db.close_db()
 
 app = FastAPI(lifespan=lifespan)
 
