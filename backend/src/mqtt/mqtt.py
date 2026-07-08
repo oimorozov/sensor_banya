@@ -18,7 +18,7 @@ TOPIC_METRIC = {
 
 def parse_uptime(payload: str) -> float | None:
     """
-    Parses uptime like "0d21h08m" into total seconds
+    Parses uptime like "#d#h#m" into time
     """
     match = re.fullmatch(r"(?:(\d+)d)?(?:(\d+)h)?(?:(\d+)m)?", payload.strip())
     if not match or not any(match.groups()):

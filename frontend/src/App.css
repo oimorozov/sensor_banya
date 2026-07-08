@@ -251,6 +251,118 @@
   }
 }
 
+.decor {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.embers {
+  position: absolute;
+  inset: 0;
+}
+
+.embers span {
+  position: absolute;
+  bottom: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffce8a, #ff5a22 60%, transparent 75%);
+  box-shadow: 0 0 8px rgba(255, 120, 40, 0.8);
+  opacity: 0;
+  animation-name: rise;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in;
+}
+
+@keyframes rise {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.9;
+  }
+  70% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(24px, -88vh) scale(0.3);
+    opacity: 0;
+  }
+}
+
+.sprig {
+  position: fixed;
+  width: 230px;
+  height: 380px;
+  opacity: 0.13;
+}
+
+.sprig__stem {
+  fill: none;
+  stroke: #a7b85a;
+  stroke-width: 2.4;
+}
+
+.sprig__leaf {
+  fill: #92a544;
+}
+
+.sprig__vein {
+  stroke: rgba(20, 12, 6, 0.35);
+  stroke-width: 1;
+}
+
+.sprig--tr {
+  top: -70px;
+  right: -60px;
+  transform: rotate(20deg);
+}
+
+.sprig--bl {
+  bottom: -90px;
+  left: -70px;
+  transform: rotate(-158deg);
+}
+
+.leaf {
+  position: fixed;
+  top: -6vh;
+  height: auto;
+  opacity: 0;
+  animation-name: drift;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.leaf__blade {
+  fill: #9aad4b;
+}
+
+.leaf__vein {
+  stroke: rgba(20, 12, 6, 0.35);
+  stroke-width: 1;
+}
+
+@keyframes drift {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.55;
+  }
+  90% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateY(112vh) rotate(230deg);
+    opacity: 0;
+  }
+}
+
 @media (max-width: 560px) {
   .grid {
     grid-template-columns: 1fr;
