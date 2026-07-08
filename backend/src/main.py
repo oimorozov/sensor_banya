@@ -40,7 +40,7 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(
-        app=app,
+        "src.main:app",
         host=settings.settings.APP_HOST,
         port=settings.settings.APP_PORT,
         reload=True,
