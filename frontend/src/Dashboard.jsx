@@ -56,16 +56,24 @@ function heatPercent(temp) {
   return Math.max(0, Math.min(100, (num / 120) * 100));
 }
 
-export default function Dashboard({ username, onLogout }) {
+export default function Dashboard({ username, onLogout, onUnauthorized }) {
   const [data, setData] = useState({});
   const [connected, setConnected] = useState(false);
   const [fresh, setFresh] = useState(new Set());
   const prev = useRef({});
+  const unauthorized = useRef(onUnauthorized);
+  unauthorized.current = onUnauthorized;
 
   useEffect(() => {
     fetch("/api/current")
-      .then((r) => r.json())
-      .then((snapshot) => setData((p) => ({ ...p, ...snapshot })))
+      .then((r) => {
+        if (r.status === 401) {
+          unauthorized.current();
+          return null;
+        }
+        return r.json();
+      })
+      .then((snapshot) => snapshot && setData((p) => ({ ...p, ...snapshot })))
       .catch(() => {});
   }, []);
 
@@ -85,8 +93,12 @@ export default function Dashboard({ username, onLogout }) {
           return;
         }
       };
-      ws.onclose = () => {
+      ws.onclose = (e) => {
         setConnected(false);
+        if (e.code === 1008) {
+          unauthorized.current();
+          return;
+        }
         if (!closed) retry = setTimeout(connect, 3000);
       };
       ws.onerror = () => ws.close();

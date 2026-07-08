@@ -28,7 +28,14 @@ export default function App() {
     setAuth("out");
   };
 
+  const onUnauthorized = () => {
+    setUsername("");
+    setAuth("out");
+  };
+
   if (auth === "loading") return <div className="boot" />;
   if (auth === "out") return <Login onLogin={onLogin} />;
-  return <Dashboard username={username} onLogout={onLogout} />;
+  return (
+    <Dashboard username={username} onLogout={onLogout} onUnauthorized={onUnauthorized} />
+  );
 }
