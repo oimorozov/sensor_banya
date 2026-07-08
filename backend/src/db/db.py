@@ -4,14 +4,14 @@ from pathlib import Path
 
 from src.config import settings
 
-DDL_PATH = Path(__file__).parent / "ddl" / "metrics.sql"
+DDL_DIR = Path(__file__).parent / "ddl"
 
 pool: asyncpg.Pool | None = None
 
 
 async def init_db() -> None:
     """
-    Initializes async database pool
+    Initializes async database pool and applies every DDL file in ddl/
     """
     global pool
 
@@ -23,9 +23,9 @@ async def init_db() -> None:
         database=settings.settings.POSTGRES_DB,
     )
 
-    ddl = DDL_PATH.read_text(encoding="utf-8")
     async with pool.acquire() as conn:
-        await conn.execute(ddl)
+        for path in sorted(DDL_DIR.glob("*.sql")):
+            await conn.execute(path.read_text(encoding="utf-8"))
 
 
 async def close_db() -> None:
