@@ -4,6 +4,7 @@ from src.config import settings
 
 pool: asyncpg.Pool | None = None
 
+
 async def init_db() -> None:
     """
     Initializes async database pool
@@ -18,18 +19,20 @@ async def init_db() -> None:
         database=settings.settings.POSTGRES_DB,
     )
 
+
 async def close_db() -> None:
     """
     Closes async database pool
     """
-    if pool:
+    if pool is not None:
         await pool.close()
 
-async def get_pool() -> asyncpg.Pool:
+
+def get_pool() -> asyncpg.Pool:
     """
     Getter for connection pool
     """
-    if not pool:
+    if pool is None:
         raise RuntimeError("Database pool is not initialized")
 
     return pool
