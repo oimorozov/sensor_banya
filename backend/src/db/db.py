@@ -1,7 +1,10 @@
 import asyncpg
-import os
+
+from pathlib import Path
 
 from src.config import settings
+
+DDL_PATH = Path(__file__).parent / "ddl" / "metrics.sql"
 
 pool: asyncpg.Pool | None = None
 
@@ -20,11 +23,9 @@ async def init_db() -> None:
         database=settings.settings.POSTGRES_DB,
     )
 
-    file_path: str = os.path.join(os.path.dirname(__file__), "ddl", "metrics.sql")
-    with open(file_path, "r") as f:
-        ddl = f.read()
-        async with pool.acquire() as conn:
-            await conn.execute(ddl)
+    ddl = DDL_PATH.read_text(encoding="utf-8")
+    async with pool.acquire() as conn:
+        await conn.execute(ddl)
 
 
 async def close_db() -> None:
