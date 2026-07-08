@@ -25,7 +25,8 @@ function formatValue(item, value) {
   if (value === undefined || value === null) return "—";
   if (item.format) return item.format(value);
   const num = Number(value);
-  return Number.isFinite(num) ? num.toFixed(1) : String(value);
+  if (!Number.isFinite(num)) return String(value);
+  return num % 1 === 0 ? String(num) : num.toFixed(1);
 }
 
 function heatPercent(temp) {
@@ -101,6 +102,7 @@ export default function App() {
         <span
           className={`live ${connected ? "live--on" : ""}`}
           role="status"
+          title={connected ? "Данные идут" : "Нет связи"}
           aria-label={connected ? "данные идут" : "нет связи"}
         />
       </header>

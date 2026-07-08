@@ -1,4 +1,5 @@
 import asyncio
+import re
 
 import aiomqtt
 
@@ -15,6 +16,29 @@ TOPIC_METRIC = {
 }
 
 
+def parse_uptime(payload: str) -> float | None:
+    """
+    Parses uptime like "0d21h08m" into total seconds
+    """
+    match = re.fullmatch(r"(?:(\d+)d)?(?:(\d+)h)?(?:(\d+)m)?", payload.strip())
+    if not match or not any(match.groups()):
+        return None
+    days, hours, minutes = (int(x) if x else 0 for x in match.groups())
+    return days * 86400 + hours * 3600 + minutes * 60
+
+
+def parse_value(metric_name: str, payload: str) -> float | None:
+    """
+    Converts raw payload into a numeric value for the given metric
+    """
+    if metric_name == "uptime":
+        return parse_uptime(payload)
+    try:
+        return float(payload)
+    except ValueError:
+        return None
+
+
 async def handle_message(topic: str, payload: str) -> None:
     """
     Handles message and writes it to database
@@ -23,12 +47,11 @@ async def handle_message(topic: str, payload: str) -> None:
     if _metric is None:
         return
 
-    try:
-        value = float(payload)
-    except ValueError:
+    value = parse_value(_metric, payload)
+    if value is None:
         return
 
-    await metric.add(_metric, value)  # pyright: ignore
+    await metric.add(_metric, value)
     await ws.broadcast({_metric: value})
 
 
