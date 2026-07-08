@@ -7,29 +7,33 @@
 }
 
 :root {
-  --wood-dark: #3a2415;
-  --wood: #6b4423;
-  --plank: #b5834f;
-  --plank-light: #d9a86c;
-  --ember: #e2622c;
-  --text: #fff3e6;
-  --text-dim: #e9cba8;
+  --coal: #130c07;
+  --bark: #2b1d12;
+  --edge: rgba(244, 233, 214, 0.09);
+  --birch: #f5ebd8;
+  --ash: #9c876f;
+  --amber: #f2a63f;
+  --ember: #ff5a22;
 
-  font-family: "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
-  color: var(--text);
+  --font-display: "Unbounded", sans-serif;
+  --font-body: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  font-family: var(--font-body);
+  color: var(--birch);
 }
 
 body {
   min-height: 100vh;
-  background:
-    radial-gradient(ellipse at top, rgba(226, 98, 44, 0.25), transparent 60%),
-    repeating-linear-gradient(
-      180deg,
-      #4a2e19 0px,
-      #4a2e19 46px,
-      #432917 46px,
-      #432917 48px
-    ),
-    linear-gradient(180deg, #3a2415, #2a1a0e);
-  background-attachment: fixed;
+  background: linear-gradient(180deg, #160e08, #0f0904);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

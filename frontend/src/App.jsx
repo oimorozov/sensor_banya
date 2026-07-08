@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
-const METRICS = [
-  { key: "temp", label: "Температура в парной", unit: "°C", icon: "🔥" },
-  { key: "humid", label: "Влажность", unit: "%", icon: "💧" },
-  { key: "temp_out", label: "Температура на улице", unit: "°C", icon: "🌡️" },
-  { key: "pressure", label: "Давление", unit: "мм рт. ст.", icon: "🧭" },
-  { key: "uptime", label: "Время работы", unit: "", icon: "⏱️", format: formatUptime },
+const GRID = [
+  { key: "humid", label: "Влажность", unit: "%" },
+  { key: "temp_out", label: "На улице", unit: "°C" },
+  { key: "pressure", label: "Давление", unit: "мм рт. ст." },
+  { key: "uptime", label: "Аптайм контроллера", unit: "", format: formatUptime },
 ];
 
 function formatUptime(sec) {
@@ -22,21 +21,29 @@ function formatUptime(sec) {
   return parts.join(" ");
 }
 
-function formatValue(metric, value) {
+function formatValue(item, value) {
   if (value === undefined || value === null) return "—";
-  if (metric.format) return metric.format(value);
+  if (item.format) return item.format(value);
   const num = Number(value);
   return Number.isFinite(num) ? num.toFixed(1) : String(value);
+}
+
+function heatPercent(temp) {
+  const num = Number(temp);
+  if (!Number.isFinite(num)) return 0;
+  return Math.max(0, Math.min(100, (num / 120) * 100));
 }
 
 export default function App() {
   const [data, setData] = useState({});
   const [connected, setConnected] = useState(false);
+  const [fresh, setFresh] = useState(new Set());
+  const prev = useRef({});
 
   useEffect(() => {
     fetch("/api/current")
       .then((r) => r.json())
-      .then((snapshot) => setData((prev) => ({ ...prev, ...snapshot })))
+      .then((snapshot) => setData((p) => ({ ...p, ...snapshot })))
       .catch(() => {});
   }, []);
 
@@ -48,12 +55,10 @@ export default function App() {
     const connect = () => {
       const proto = location.protocol === "https:" ? "wss" : "ws";
       ws = new WebSocket(`${proto}://${location.host}/api/ws`);
-
       ws.onopen = () => setConnected(true);
       ws.onmessage = (e) => {
         try {
-          const msg = JSON.parse(e.data);
-          setData((prev) => ({ ...prev, ...msg }));
+          setData((p) => ({ ...p, ...JSON.parse(e.data) }));
         } catch {
           return;
         }
@@ -73,43 +78,63 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const changed = [];
+    for (const k in data) {
+      if (prev.current[k] !== data[k]) changed.push(k);
+    }
+    prev.current = { ...data };
+    if (!changed.length) return;
+    setFresh(new Set(changed));
+    const t = setTimeout(() => setFresh(new Set()), 900);
+    return () => clearTimeout(t);
+  }, [data]);
+
   return (
     <div className="page">
-      <header className="header">
-        <div className="header__brand">
-          <span className="header__icon">🧖</span>
-          <h1 className="header__title">sensor_banya</h1>
-          <span className="header__icon">🌿</span>
+      <div className="stove" aria-hidden="true" />
+
+      <header className="top">
+        <div className="brand">
+          sensor<span className="brand__mark">_banya</span>
         </div>
-        <div className={`status ${connected ? "status--on" : "status--off"}`}>
-          <span className="status__dot" />
-          {connected ? "в эфире" : "нет связи"}
-        </div>
+        <span
+          className={`live ${connected ? "live--on" : ""}`}
+          role="status"
+          aria-label={connected ? "данные идут" : "нет связи"}
+        />
       </header>
 
-      <main className="content">
-        <section className="cards">
-          {METRICS.map((m) => (
-            <article className="card" key={m.key}>
-              <div className="card__icon">{m.icon}</div>
-              <div className="card__label">{m.label}</div>
-              <div className="card__value">
-                {formatValue(m, data[m.key])}
-                {m.unit && <span className="card__unit">{m.unit}</span>}
-              </div>
+      <main className="board">
+        <section className={`hero ${fresh.has("temp") ? "is-fresh" : ""}`}>
+          <span className="hero__eyebrow">Парная · сейчас</span>
+          <div className="hero__readout">
+            <span className="hero__value">{formatValue({ key: "temp" }, data.temp)}</span>
+            <span className="hero__unit">°C</span>
+          </div>
+          <span className="hero__label">Температура в парной</span>
+          <div className="hero__bar">
+            <span style={{ width: `${heatPercent(data.temp)}%` }} />
+          </div>
+        </section>
+
+        <section className="grid">
+          {GRID.map((item) => (
+            <article key={item.key} className={`tile ${fresh.has(item.key) ? "is-fresh" : ""}`}>
+              <span className="tile__label">{item.label}</span>
+              <span className="tile__value">
+                {formatValue(item, data[item.key])}
+                {item.unit && <span className="tile__unit">{item.unit}</span>}
+              </span>
             </article>
           ))}
         </section>
 
-        <section className="charts">
-          <div className="charts__placeholder">
-            <span className="charts__icon">📈</span>
-            <span>Здесь появятся графики</span>
-          </div>
+        <section className="trend">
+          <span className="trend__title">Динамика за сутки</span>
+          <div className="trend__panel" aria-hidden="true" />
         </section>
       </main>
-
-      <footer className="footer">🪵 банный мониторинг · sensor_banya</footer>
     </div>
   );
 }
