@@ -46,6 +46,7 @@ async def login(body: LoginRequest, response: Response):
         value=session_id,
         httponly=True,
         samesite="lax",
+        secure=True,
         max_age=SESSION_TTL,
     )
     return {"ok": True, "username": body.username}
